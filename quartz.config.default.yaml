@@ -1,13 +1,13 @@
 # yaml-language-server: $schema=./quartz/plugins/quartz-plugins.schema.json
 configuration:
-  pageTitle: Quartz 5
+  pageTitle: 考研数学笔记
   pageTitleSuffix: ""
   enableSPA: true
   enablePopovers: true
   analytics:
     provider: plausible
-  locale: en-US
-  baseUrl: quartz.jzhao.xyz
+  locale: zh-CN
+  baseUrl: taylorwoo.github.io/kaoyan-math-site
   ignorePatterns:
     - private
     - templates
@@ -203,8 +203,8 @@ plugins:
     enabled: true
     options:
       links:
-        GitHub: https://github.com/jackyzha0/quartz
-        Discord Community: https://discord.gg/cRFFHYye7t
+        GitHub: https://github.com/taylorwoo/kaoyan-math-site
+        源码: https://github.com/taylorwoo/kaoyan-math
     layout:
       position: footer
       priority: 50
