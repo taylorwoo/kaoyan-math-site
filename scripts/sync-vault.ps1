@@ -116,7 +116,14 @@ try {
     Write-Host "https://github.com/$slug/actions"
 
     if (-not (Get-Command gh -ErrorAction SilentlyContinue)) {
-        Write-Host 'Install/refresh gh CLI to watch the build here. Open the URL above to follow it.'
+        # PowerShell windows opened before gh was installed never picked up the new PATH entry.
+        $ghDir = Join-Path ${env:ProgramFiles} 'GitHub CLI'
+        if (Test-Path -LiteralPath (Join-Path $ghDir 'gh.exe')) {
+            $env:Path = "$env:Path;$ghDir"
+        }
+    }
+    if (-not (Get-Command gh -ErrorAction SilentlyContinue)) {
+        Write-Host 'gh CLI not found on PATH — open the URL above to follow the build.'
         return
     }
 
