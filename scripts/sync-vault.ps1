@@ -88,23 +88,30 @@ if ($toc.Count -gt 0) {
 Push-Location $siteRoot
 try {
     git add -- content | Out-Null
-    if (-not (git status --porcelain -- content)) {
-        Write-Host 'No note changes to publish.'
+    if (git status --porcelain -- content) {
+        if (-not $Message) {
+            $Message = "sync: update notes from Obsidian vault ($((Get-Date).ToString('yyyy-MM-dd HH:mm')))"
+        }
+        git commit -m $Message | Out-Null
+    } else {
+        Write-Host 'No new note changes in the vault.'
+    }
+
+    # Commits can already exist locally without being pushed (an earlier -NoPush run,
+    # or a manual config commit), so decide on push from ahead-count, not from the diff.
+    $ahead = [int]((git rev-list --count '@{u}..HEAD' 2>$null))
+    if ($ahead -eq 0) {
+        Write-Host 'Nothing to publish — the site is already up to date.'
         return
     }
 
-    if (-not $Message) {
-        $Message = "sync: update notes from Obsidian vault ($((Get-Date).ToString('yyyy-MM-dd HH:mm')))"
-    }
-    git commit -m $Message | Out-Null
-
     if ($NoPush) {
-        Write-Host 'Committed locally. Skipped push (-NoPush).'
+        Write-Host "$ahead local commit(s) ready. Skipped push (-NoPush)."
         return
     }
 
     git push origin HEAD | Out-Null
-    Write-Host 'Pushed. GitHub Actions is now rebuilding the site.'
+    Write-Host "Pushed $ahead commit(s). GitHub Actions is now rebuilding the site."
 
     $slug = ''
     $remoteUrl = (git remote get-url origin 2>$null)
